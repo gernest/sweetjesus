@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="RUBY_MODULE" version="4">
+  <component name="CompassSettings">
+    <option name="compassSupportEnabled" value="true" />
+  </component>
+  <component name="ModuleRunConfigurationManager">
+    <configuration default="false" name="receive_sms.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true">
+      <option name="name" value="receive_sms.go" />
+      <option name="saveOutputToFile" value="false" />
+      <option name="showConsoleOnStdErr" value="false" />
+      <option name="showConsoleOnStdOut" value="false" />
+      <option name="scriptName" value="$PROJECT_DIR$/receive_sms.go" />
+      <option name="scriptArguments" value="" />
+      <option name="builderArguments" value="" />
+      <option name="goBuildBeforeRun" value="false" />
+      <option name="goOutputDir" value="" />
+      <option name="workingDir" value="$PROJECT_DIR$" />
+      <option name="envVars" value="" />
+      <option name="goVetEnabled" value="false" />
+      <module name="sweetjesus" />
+      <RunnerSettings RunnerId="GoApplicationRunner" />
+      <ConfigurationWrapper RunnerId="GoApplicationRunner" />
+      <method />
+    </configuration>
+  </component>
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
+
