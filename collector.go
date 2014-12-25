@@ -4,43 +4,74 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/gernest/jesus"
 )
 
-// A buffered channel that we can send work requests on.
-var WorkQueue = make(chan WorkRequest, 100)
+// WorkQeue is a global channel for received sms
+var WorkQueue = make(chan []jesus.Inbox, 100)
 
+// InboundMessages its what we collect from inbox
+var InboundMessages []jesus.Inbox
+
+// Collector handles http requests
 func Collector(w http.ResponseWriter, r *http.Request) {
-	// Make sure we can only be called with an HTTP POST request.
 	if r.Method != "POST" {
 		w.Header().Set("Allow", "POST")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-
-	// Parse the delay.
-	delay, err := time.ParseDuration(r.FormValue("delay"))
+	err := LoadSMS()
 	if err != nil {
-		http.Error(w, "Bad delay value: "+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Yummy", http.StatusInternalServerError)
 		return
 	}
-	// Check to make sure the delay is anywhere from 1 to 10 seconds.
-	if delay.Seconds() < 1 || delay.Seconds() > 10 {
-		http.Error(w, "The delay must be between 1 and 10 seconds, inclusively.", http.StatusBadRequest)
-		return
+	if len(InboundMessages) == 0 {
+		err = Reload()
+		if err != nil {
+			http.Error(w, "Yummy", http.StatusInternalServerError)
+			return
+		}
 	}
-	// Now, we retrieve the person's name from the request.
-	name := r.FormValue("name")
-	// Just do a quick bit of sanity checking to make sure the client actually provided us with a name.
-	if name == "" {
-		http.Error(w, "You must specify a name.", http.StatusBadRequest)
-		return
-	}
-	// Now, we take the delay, and the person's name, and make a WorkRequest out of them.
-	work := WorkRequest{Name: name, Delay: delay}
-	// Push the work onto the queue.
-	WorkQueue <- work
+
+	WorkQueue <- InboundMessages
 	fmt.Println("Work request queued")
-	// And let the user know their work request was created.
 	w.WriteHeader(http.StatusCreated)
 	return
+}
+
+// LoadSMS just takes all what is inside our sms box
+func LoadSMS() error {
+	localConn, err := jesus.ConnectLocalDB("jesus_test")
+	if err != nil {
+		// Do something
+	}
+	InboundMessages = []jesus.Inbox{}
+	err = localConn.Find(&InboundMessages).Error
+	if err != nil {
+		// Do something
+	}
+	return nil
+}
+
+// Reload tries to check inbox again
+//
+// I assume, there might be a time, where the smsd daemon calls the api but it hasnt yet
+// stored the sms in the database, so yep 1 second is enough
+func Reload() error {
+	fmt.Println("Reloading ...")
+	time.Sleep(time.Second)
+	err := LoadSMS()
+	return err
+}
+
+// RunMigrations perfoms simple migrations
+//
+// Note that, its only for testing purposes and I dont intend to maintain this
+func RunMigrations() {
+	remoteDBConn, _ := jesus.RemoteDB("remote")
+	p := jesus.UProfile{}
+	w := jesus.Withdrawal{}
+	d := jesus.Deposit{}
+	remoteDBConn.AutoMigrate(&p, &w, &d)
 }

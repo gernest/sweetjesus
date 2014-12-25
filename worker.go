@@ -2,31 +2,31 @@ package main
 
 import (
 	"fmt"
-	"time"
+
+	"github.com/gernest/jesus"
+	"github.com/kr/pretty"
 )
 
-// NewWorker creates, and returns a new Worker object. Its only argument
-// is a channel that the worker can add itself to whenever it is done its
-// work.
-func NewWorker(id int, workerQueue chan chan WorkRequest) Worker {
+// NewWorker is for ibitializing a worker object
+func NewWorker(id int, workerQueue chan chan []jesus.Inbox) Worker {
 	// Create, and return the worker.
 	worker := Worker{
-		ID: id,
-		Work: make(chan WorkRequest),
+		ID:          id,
+		Work:        make(chan []jesus.Inbox),
 		WorkerQueue: workerQueue,
-		QuitChan: make(chan bool)}
+		QuitChan:    make(chan bool)}
 	return worker
 }
 
+// Worker perfoms simple tasts
 type Worker struct {
-	ID int
-	Work chan WorkRequest
-	WorkerQueue chan chan WorkRequest
-	QuitChan chan bool
+	ID          int
+	Work        chan []jesus.Inbox
+	WorkerQueue chan chan []jesus.Inbox
+	QuitChan    chan bool
 }
 
-// This function "starts" the worker by starting a goroutine, that is
-// an infinite "for-select" loop.
+// Start runs a go routine which is ready for accepting tasks
 func (w Worker) Start() {
 	go func() {
 		for {
@@ -35,11 +35,25 @@ func (w Worker) Start() {
 			select {
 			case work := <-w.Work:
 				// Receive a work request.
-				fmt.Printf("worker%d: Received work request, delaying for %f seconds\n", w.ID, work.Delay.Seconds())
-				time.Sleep(work.Delay)
-				fmt.Printf("worker%d: Hello, %s!\n", w.ID, work.Name)
+				var uProfile jesus.UProfile
+				remoteDBConn, err := jesus.RemoteDB("remote")
+				pretty.Println(work)
+				if err != nil {
+					w.Stop()
+				}
+				for _, v := range work {
+					fmt.Println("working on deposits for ", v.SenderNumber)
+					uProfile = jesus.UProfile{}
+					err = remoteDBConn.WHere(&jesus.UProfile{Phone: v.SenderNumber}).First(&uProfile).Error
+					if err != nil {
+						w.Stop()
+					}
+					uProfile.PrepareDeposit(&v)
+					remoteDBConn.Save(&uProfile)
+					fmt.Println("====done===")
+				}
+
 			case <-w.QuitChan:
-				// We have been asked to stop.
 				fmt.Printf("worker%d stopping\n", w.ID)
 				return
 			}

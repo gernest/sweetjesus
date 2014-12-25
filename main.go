@@ -12,15 +12,16 @@ var (
 )
 
 func main() {
-	// Parse the command-line flags.
-	flag.Parse()
 	// Start the dispatcher.
-	fmt.Println("Starting the dispatcher")
 	StartDispatcher(*NWorkers)
-	// Register our collector as an HTTP handler function.
-	fmt.Println("Registering the collector")
-	http.HandleFunc("/work", Collector)
-	// Start the HTTP server!
+
+	// Run migrations
+	RunMigrations()
+
+	// Register http handler
+	http.HandleFunc("/mpesa", Collector)
+
+	// Start Server
 	fmt.Println("HTTP server listening on", *HTTPAddr)
 	if err := http.ListenAndServe(*HTTPAddr, nil); err != nil {
 		fmt.Println(err.Error())
