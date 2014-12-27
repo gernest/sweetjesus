@@ -9,7 +9,7 @@ _____
 
 * Add documentation
 * Make this go getable
-* Use configuration file for running
+* Accept Configuration file
 * Add tests
 
 Contributing
