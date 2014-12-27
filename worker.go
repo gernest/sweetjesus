@@ -36,7 +36,7 @@ func (w Worker) Start() {
 			case work := <-w.Work:
 				// Receive a work request.
 				var uProfile jesus.UProfile
-				remoteDBConn, err := jesus.RemoteDB("remote")
+				remoteDBConn, err := RemoteDB()
 				pretty.Println(work)
 				if err != nil {
 					w.Stop()
@@ -44,7 +44,7 @@ func (w Worker) Start() {
 				for _, v := range work {
 					fmt.Println("working on deposits for ", v.SenderNumber)
 					uProfile = jesus.UProfile{}
-					err = remoteDBConn.WHere(&jesus.UProfile{Phone: v.SenderNumber}).First(&uProfile).Error
+					err = remoteDBConn.Where(&jesus.UProfile{Phone: v.SenderNumber}).First(&uProfile).Error
 					if err != nil {
 						w.Stop()
 					}

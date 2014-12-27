@@ -21,13 +21,13 @@ func Collector(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	err := LoadSMS()
+	err := loadSMS()
 	if err != nil {
 		http.Error(w, "Yummy", http.StatusInternalServerError)
 		return
 	}
 	if len(InboundMessages) == 0 {
-		err = Reload()
+		err = reload()
 		if err != nil {
 			http.Error(w, "Yummy", http.StatusInternalServerError)
 			return
@@ -40,9 +40,8 @@ func Collector(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// LoadSMS just takes all what is inside our sms box
-func LoadSMS() error {
-	localConn, err := jesus.ConnectLocalDB("jesus_test")
+func loadSMS() error {
+	localConn, err := ConnectLocalDB()
 	if err != nil {
 		// Do something
 	}
@@ -54,14 +53,10 @@ func LoadSMS() error {
 	return nil
 }
 
-// Reload tries to check inbox again
-//
-// I assume, there might be a time, where the smsd daemon calls the api but it hasnt yet
-// stored the sms in the database, so yep 1 second is enough
-func Reload() error {
+func reload() error {
 	fmt.Println("Reloading ...")
 	time.Sleep(time.Second)
-	err := LoadSMS()
+	err := loadSMS()
 	return err
 }
 
@@ -69,7 +64,7 @@ func Reload() error {
 //
 // Note that, its only for testing purposes and I dont intend to maintain this
 func RunMigrations() {
-	remoteDBConn, _ := jesus.RemoteDB("remote")
+	remoteDBConn, _ := RemoteDB()
 	p := jesus.UProfile{}
 	w := jesus.Withdrawal{}
 	d := jesus.Deposit{}
