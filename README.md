@@ -1,4 +1,30 @@
-sweetjesus
-==========
+# sweetjesus
 
-Web backend for M-PESA processing
+A M-Pesa processing backend
+
+More info can be foud on this post [Implementing M-Pesa processing system in Go]()
+
+TODO
+_____
+
+* Add documentation
+* Make this go getable
+* Use configuration file for running
+* Add tests
+
+Contributing
+------------
+
+Contributions are welcome. 
+
+Before writing code, send mail to geofreyernest@live.com to discuss what you
+plan to do. This gives me a chance to validate the design, avoid duplication of
+effort and ensure that the changes fit the goals of the project. Do not start
+the discussion with a pull request. 
+
+License
+-------
+
+jesus is available under the 
+[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
+
