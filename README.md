@@ -1,11 +1,11 @@
-# sweetjesus
+# sweetjesus [![Build Status](https://travis-ci.org/gernest/sweetjesus.svg?branch=master)](https://travis-ci.org/gernest/sweetjesus)
 
 A M-Pesa processing backend
 
 More info can be foud on this post [Implementing M-Pesa processing system in Go]()
 
 TODO
-_____
+------
 
 * Add documentation
 * Make this go getable
